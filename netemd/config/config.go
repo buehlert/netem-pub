@@ -21,7 +21,7 @@ type Interface struct {
 
 func NewConfig() *Config {
 	return &Config{
-		PollIntervalMs: 1000,
+		PollIntervalMs: 100,
 		HTTPPort:       8888,
 	}
 }
