@@ -40,24 +40,41 @@ func Parse(filename string, nLine int) (*PlusData, int, error) {
 
 	for {
 		row, err := csvr.Read()
-		if n < nLine {
-			n++
-			continue
-		}
 
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			n++
+			return &toReturn, n, err
+		}
+
+		if n < nLine {
+			n++
 			continue
 		}
 
 		// timestamp, _ = strconv.ParseFloat(row[0], 64)
-		currentPsnPse, _ = strconv.ParseFloat(row[6], 64)
-		currentSpin, _ = strconv.ParseFloat(row[8], 64)
-		newPsnPse, _ = strconv.ParseBool(row[7])
-		newSpin, _ = strconv.ParseBool(row[9])
+		currentPsnPse, err = strconv.ParseFloat(row[6], 64)
+		if err != nil {
+			n++
+			return &toReturn, n, err
+		}
+		currentSpin, err = strconv.ParseFloat(row[8], 64)
+		if err != nil {
+			n++
+			return &toReturn, n, err
+		}
+		newPsnPse, err = strconv.ParseBool(row[7])
+		if err != nil {
+			n++
+			return &toReturn, n, err
+		}
+		newSpin, err = strconv.ParseBool(row[9])
+		if err != nil {
+			n++
+			return &toReturn, n, err
+		}
 
 		// fmt.Println(newSpin, row)
 
