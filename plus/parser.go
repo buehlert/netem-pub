@@ -2,6 +2,7 @@ package plus
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -92,6 +93,17 @@ func Parse(filename string, nLine int) (*PlusData, int, error) {
 		if newLines > 3 {
 			break
 		}
+	}
+
+	fOut, err := os.OpenFile("/root/share/test_output.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err == nil {
+
+		defer fOut.Close()
+
+		_, _ = fOut.WriteString(string(n))
+		_, _ = fOut.WriteString("\n")
+		_, _ = fOut.WriteString(fmt.Sprintf("%f", toReturn.PsnPse))
+		_, _ = fOut.WriteString("\n")
 	}
 
 	return &toReturn, n, nil
