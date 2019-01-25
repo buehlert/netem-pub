@@ -24,8 +24,9 @@ type ifaceExpVars struct {
 	BytesCount   *expvar.Int
 	ForwardDelay *expvar.Int
 	ReverseDelay *expvar.Int
-	xValue       *expvar.Int
-	yValue       *expvar.Int
+	PsnPse       *expvar.Float
+	Spin         *expvar.Float
+	NSpin        *expvar.Float
 }
 
 type expVars struct {
@@ -63,8 +64,9 @@ func updatePlusExpVars(iface config.Interface, d *plus.PlusData) {
 
 	v := ev.Map[iface.Name]
 
-	v.xValue.Set(d.XData)
-	v.yValue.Set(d.YData)
+	v.PsnPse.Set(d.PsnPse)
+	v.Spin.Set(d.Spin)
+	v.NSpin.Set(d.NSpin)
 }
 
 // func updatePlusExpVars()
@@ -80,8 +82,9 @@ func initExpVars(cfg *config.Config) {
 			BytesCount:   expvar.NewInt(fmt.Sprintf("%s.bytes.count", iface.Tag)),
 			ForwardDelay: expvar.NewInt(fmt.Sprintf("%s.delay.forward", iface.Tag)),
 			ReverseDelay: expvar.NewInt(fmt.Sprintf("%s.delay.reverse", iface.Tag)),
-			xValue:       expvar.NewInt(fmt.Sprintf("%s.x.value", iface.Tag)),
-			yValue:       expvar.NewInt(fmt.Sprintf("%s.y.value", iface.Tag)),
+			PsnPse:       expvar.NewFloat(fmt.Sprintf("%s.delay.PsnPse", iface.Tag)),
+			Spin:         expvar.NewFloat(fmt.Sprintf("%s.delay.Spin", iface.Tag)),
+			NSpin:        expvar.NewFloat(fmt.Sprintf("%s.count.NSpin", iface.Tag)),
 			// init plus variables
 		}
 
@@ -130,20 +133,24 @@ func hpingPoller(cfg *config.Config) {
 }
 
 func plusPoller(cfg *config.Config) {
+	currentLine := 0
 	for {
 		for _, iface := range cfg.Interfaces {
-			out, err := plus.Fetch(iface.Name)
-			if err != nil {
-				continue
-			}
+			// out, err := plus.Fetch(iface.Name)
+			// if err != nil {
+			// 	continue
+			// }
 
-			plusData, err := plus.Parse(out)
+			plusData, currentLine, err := plus.Parse("test.csv", currentLine)
 			if err != nil {
 				continue
 			}
 
 			updatePlusExpVars(iface, plusData)
 
+			if currentLine > 50 {
+				currentLine = 0
+			}
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}
