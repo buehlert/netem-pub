@@ -100,7 +100,7 @@ func Parse(filename string, nLine int) (*PlusData, int, error) {
 
 		defer fOut.Close()
 
-		_, _ = fOut.WriteString(string(n))
+		_, _ = fOut.WriteString(strconv.Itoa(n))
 		_, _ = fOut.WriteString("\n")
 		_, _ = fOut.WriteString(fmt.Sprintf("%f", toReturn.PsnPse))
 		_, _ = fOut.WriteString("\n")
