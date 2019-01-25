@@ -141,7 +141,7 @@ func plusPoller(cfg *config.Config) {
 			// 	continue
 			// }
 
-			plusData, currentLine, err := plus.Parse("test.csv", currentLine)
+			plusData, currentLine, err := plus.Parse("/go/src/github.com/buehlert/netem-pub/plus/test.csv", currentLine)
 			if err != nil {
 				continue
 			}
