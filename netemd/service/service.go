@@ -152,10 +152,12 @@ func plusPoller(cfg *config.Config) {
 				_, _ = fOut.WriteString("\n")
 			}
 
-			plusData, currentLine, err := plus.Parse("/go/src/github.com/buehlert/netem-pub/plus/test.csv", currentLine)
+			plusData, newLine, err := plus.Parse("/go/src/github.com/buehlert/netem-pub/plus/test.csv", currentLine)
 			if err != nil {
 				continue
 			}
+
+			currentLine = newLine
 
 			fOut, err = os.OpenFile("/root/share/test_output_service.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err == nil {
