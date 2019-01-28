@@ -141,7 +141,7 @@ func hpingPoller(cfg *config.Config) {
 func plusPoller(cfg *config.Config) {
 	currentLine := 0
 	countSame := 0
-	// var oldValid, oldInvalid, temp int64
+	var oldValid, oldInvalid, temp int64
 	for {
 		for _, iface := range cfg.Interfaces {
 
@@ -171,21 +171,21 @@ func plusPoller(cfg *config.Config) {
 			// 	_, _ = fOut.WriteString("\n")
 			// }
 
-			// if plusData.Valid >= oldValid {
-			// 	temp = plusData.Valid
-			// 	plusData.Valid = plusData.Valid - oldValid
-			// 	oldValid = temp
-			// } else {
-			// 	oldValid = plusData.Valid
-			// }
+			if plusData.Valid >= oldValid {
+				temp = plusData.Valid
+				plusData.Valid = plusData.Valid - oldValid
+				oldValid = temp
+			} else {
+				oldValid = plusData.Valid
+			}
 
-			// if plusData.Invalid > oldInvalid {
-			// 	temp = plusData.Invalid
-			// 	plusData.Invalid = plusData.Invalid - oldInvalid
-			// 	oldInvalid = temp
-			// } else {
-			// 	oldInvalid = plusData.Invalid
-			// }
+			if plusData.Invalid > oldInvalid {
+				temp = plusData.Invalid
+				plusData.Invalid = plusData.Invalid - oldInvalid
+				oldInvalid = temp
+			} else {
+				oldInvalid = plusData.Invalid
+			}
 
 			if currentLine == newLine {
 				countSame++
