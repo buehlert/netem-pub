@@ -97,8 +97,13 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 		// 	continue
 		// }
 
+		if len(row) != 12 {
+			n++
+			continue
+		}
+
 		// timestamp, _ = strconv.ParseFloat(row[0], 64)
-		currentPsnPse, err = strconv.ParseFloat(row[6], 64)
+		currentPsnPse, err = strconv.ParseFloat(row[10], 64)
 		if err != nil {
 			n++
 			return &toReturn, n + nLine, err
@@ -108,7 +113,7 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 			n++
 			return &toReturn, n + nLine, err
 		}
-		newPsnPse, err = strconv.ParseBool(row[7])
+		newPsnPse, err = strconv.ParseBool(row[11])
 		if err != nil {
 			n++
 			return &toReturn, n + nLine, err
@@ -122,10 +127,18 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 		// fmt.Println(newSpin, row)
 
 		if newPsnPse {
+			if currentPsnPse > 0.300 {
+				n++
+				continue
+			}
 			toReturn.PsnPse = currentPsnPse
 		}
 
 		if newSpin {
+			if currentSpin > 0.250 {
+				n++
+				continue
+			}
 			toReturn.Spin = currentSpin
 		}
 
