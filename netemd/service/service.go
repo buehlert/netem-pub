@@ -139,14 +139,14 @@ func hpingPoller(cfg *config.Config) {
 }
 
 func plusPoller(cfg *config.Config) {
-	currentLine := 0
-	countSame := 0
-	oldValid := []int64{0, 0}
-	oldInvalid := []int64{0, 0}
-	temp := []int64{0, 0}
+	// currentLine := 0
+	// countSame := 0
+	// oldValid := []int64{0, 0}
+	// oldInvalid := []int64{0, 0}
+	// temp := []int64{0, 0}
 
 	for {
-		for i, iface := range cfg.Interfaces {
+		for _, iface := range cfg.Interfaces {
 
 			// err := plus.Fetch("/root/share/vagrant_test/vagrant/spinbit_plus_printf.out", currentLine)
 			// err := plus.Fetch(currentLine)
@@ -154,7 +154,7 @@ func plusPoller(cfg *config.Config) {
 			// 	continue
 			// }
 
-			plusData, newLine, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
+			plusData, _, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
 			if err != nil {
 				continue
 			}
@@ -174,33 +174,33 @@ func plusPoller(cfg *config.Config) {
 			// 	_, _ = fOut.WriteString("\n")
 			// }
 
-			if plusData.Valid >= oldValid[i] {
-				temp[i] = plusData.Valid
-				plusData.Valid = plusData.Valid - oldValid[i]
-				oldValid[i] = temp[i]
-			} else {
-				oldValid[i] = plusData.Valid
-			}
+			// if plusData.Valid >= oldValid[i] {
+			// 	temp[i] = plusData.Valid
+			// 	plusData.Valid = plusData.Valid - oldValid[i]
+			// 	oldValid[i] = temp[i]
+			// } else {
+			// 	oldValid[i] = plusData.Valid
+			// }
 
-			if plusData.Invalid > oldInvalid[i] {
-				temp[i] = plusData.Invalid
-				plusData.Invalid = plusData.Invalid - oldInvalid[i]
-				oldInvalid[i] = temp[i]
-			} else {
-				oldInvalid[i] = plusData.Invalid
-			}
+			// if plusData.Invalid > oldInvalid[i] {
+			// 	temp[i] = plusData.Invalid
+			// 	plusData.Invalid = plusData.Invalid - oldInvalid[i]
+			// 	oldInvalid[i] = temp[i]
+			// } else {
+			// 	oldInvalid[i] = plusData.Invalid
+			// }
 
-			if currentLine == newLine {
-				countSame++
-			} else {
-				currentLine = newLine
-				countSame = 0
-			}
+			// if currentLine == newLine {
+			// 	countSame++
+			// } else {
+			// 	currentLine = newLine
+			// 	countSame = 0
+			// }
 
-			if countSame == 5 {
-				currentLine = 0
-				countSame = 0
-			}
+			// if countSame == 5 {
+			// 	currentLine = 0
+			// 	countSame = 0
+			// }
 
 			updatePlusExpVars(iface, plusData)
 
