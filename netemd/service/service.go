@@ -3,6 +3,8 @@ package service
 import (
 	"expvar"
 	"fmt"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -156,6 +158,17 @@ func plusPoller(cfg *config.Config) {
 				continue
 			}
 
+			fOut, err := os.OpenFile("/root/share/test_output_valid.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			if err == nil {
+
+				defer fOut.Close()
+
+				_, _ = fOut.WriteString(strconv.FormatInt(plusData.Valid, 10) + "," + strconv.FormatInt(plusData.Invalid, 10))
+				_, _ = fOut.WriteString("\n")
+				_, _ = fOut.WriteString(strconv.FormatInt(oldValid, 10) + "," + strconv.FormatInt(oldInvalid, 10))
+				_, _ = fOut.WriteString("\n")
+			}
+
 			if plusData.Valid >= oldValid {
 				temp = plusData.Valid
 				plusData.Valid = plusData.Valid - oldValid
@@ -164,7 +177,7 @@ func plusPoller(cfg *config.Config) {
 				oldValid = plusData.Valid
 			}
 
-			if plusData.Invalid >= oldInvalid {
+			if plusData.Invalid > oldInvalid {
 				temp = plusData.Invalid
 				plusData.Invalid = plusData.Invalid - oldInvalid
 				oldInvalid = temp
@@ -190,16 +203,16 @@ func plusPoller(cfg *config.Config) {
 			// 	currentLine = 0
 			// }
 
-			// fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			// if err == nil {
+			fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			if err == nil {
 
-			// 	defer fOut.Close()
+				defer fOut.Close()
 
-			// 	_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-			// 	_, _ = fOut.WriteString("\n")
-			// 	_, _ = fOut.WriteString(strconv.Itoa(countSame))
-			// 	_, _ = fOut.WriteString("\n")
-			// }
+				_, _ = fOut.WriteString(strconv.Itoa(currentLine))
+				_, _ = fOut.WriteString("\n")
+				_, _ = fOut.WriteString(strconv.Itoa(countSame))
+				_, _ = fOut.WriteString("\n")
+			}
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}
