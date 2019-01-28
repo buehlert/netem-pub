@@ -53,6 +53,17 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 		}
 	}
 
+	fOut, err3 := os.OpenFile("/root/share/test_output_valid.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err3 == nil {
+
+		defer fOut.Close()
+
+		_, _ = fOut.WriteString(strconv.FormatInt(currentValid, 10))
+		_, _ = fOut.WriteString("\n")
+		_, _ = fOut.WriteString(strconv.FormatInt(currentInvalid, 10))
+		_, _ = fOut.WriteString("\n")
+	}
+
 	toReturn.Valid = currentValid
 	toReturn.Invalid = currentInvalid
 
