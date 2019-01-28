@@ -5,8 +5,8 @@ import (
 	"strconv"
 )
 
-func Fetch(filename string, position int) error {
-	_, err := exec.Command("/bin/sh", filename, strconv.Itoa(position)).Output()
+func Fetch(position int) error {
+	_, err := exec.Command("/bin/sh", strconv.Itoa(position)).Output()
 	if err != nil {
 		return err
 	}
