@@ -3,8 +3,6 @@ package service
 import (
 	"expvar"
 	"fmt"
-	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -136,43 +134,37 @@ func hpingPoller(cfg *config.Config) {
 
 func plusPoller(cfg *config.Config) {
 	currentLine := 0
+	countSame := 0
 	for {
 		for _, iface := range cfg.Interfaces {
-			// out, err := plus.Fetch(iface.Name)
-			// if err != nil {
-			// 	continue
-			// }
 
-			fOut, err := os.OpenFile("/root/share/test_output_service.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err == nil {
-
-				defer fOut.Close()
-
-				_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-				_, _ = fOut.WriteString("\n")
-			}
-
-			plusData, newLine, err := plus.Parse("/go/src/github.com/buehlert/netem-pub/plus/test.csv", currentLine)
+			err := plus.Fetch("/root/share/vagrant_test/vagrant/spinbit_plus_printf.out", currentLine)
 			if err != nil {
 				continue
 			}
 
-			currentLine = newLine
+			plusData, newLine, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", currentLine)
+			if err != nil {
+				continue
+			}
 
-			fOut, err = os.OpenFile("/root/share/test_output_service.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err == nil {
+			if currentLine == newLine {
+				countSame++
+			} else {
+				currentLine = newLine
+				countSame = 0
+			}
 
-				defer fOut.Close()
-
-				_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-				_, _ = fOut.WriteString("\n")
+			if countSame == 5 {
+				currentLine = 0
+				countSame = 0
 			}
 
 			updatePlusExpVars(iface, plusData)
 
-			if currentLine > 50 {
-				currentLine = 0
-			}
+			// if currentLine > 50 {
+			// 	currentLine = 0
+			// }
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}

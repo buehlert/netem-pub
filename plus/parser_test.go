@@ -27,8 +27,8 @@ func TestParse(t *testing.T) {
 		{
 			"Test 2",
 			args{"test_small.csv", 2},
-			&PlusData{PsnPse: 0.086256, Spin: 0, NSpin: 2},
-			3,
+			&PlusData{PsnPse: 0.086256, Spin: 0.03232, NSpin: 2},
+			5,
 			false,
 		},
 	}

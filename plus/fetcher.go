@@ -1,16 +1,22 @@
 package plus
 
 import (
-	"math/rand"
+	"os/exec"
+	"strconv"
 )
 
-func Fetch(iface string) (string, error) {
-	toReturn := string(rand.Intn(100)) + "," + string(rand.Intn(100))
+func Fetch(filename string, position int) error {
+	_, err := exec.Command("/bin/sh", filename, strconv.Itoa(position)).Output()
+	if err != nil {
+		return err
+	}
+
+	// toReturn := string(rand.Intn(100)) + "," + string(rand.Intn(100))
 	// fmt.Printf(toReturn)
 	// out, err := exec.Command("/usr/sbin/python", filename, string(start)).Output()
 	// if err != nil {
 	// 	return "", err
 	// }
 
-	return toReturn, nil
+	return nil
 }
