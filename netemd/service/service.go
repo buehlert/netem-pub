@@ -156,7 +156,7 @@ func plusPoller(cfg *config.Config) {
 				continue
 			}
 
-			if plusData.Valid > oldValid {
+			if plusData.Valid >= oldValid {
 				temp = plusData.Valid
 				plusData.Valid = plusData.Valid - oldValid
 				oldValid = temp
@@ -164,7 +164,7 @@ func plusPoller(cfg *config.Config) {
 				oldValid = plusData.Valid
 			}
 
-			if plusData.Invalid > oldInvalid {
+			if plusData.Invalid >= oldInvalid {
 				temp = plusData.Invalid
 				plusData.Invalid = plusData.Invalid - oldInvalid
 				oldInvalid = temp
