@@ -163,9 +163,13 @@ func plusPoller(cfg *config.Config) {
 
 				defer fOut.Close()
 
-				_, _ = fOut.WriteString(strconv.FormatInt(plusData.Valid, 10) + "," + strconv.FormatInt(plusData.Invalid, 10))
+				_, _ = fOut.WriteString(strconv.FormatInt(plusData.Valid, 10))
+				_, _ = fOut.WriteString(",")
+				_, _ = fOut.WriteString(strconv.FormatInt(plusData.Invalid, 10))
 				_, _ = fOut.WriteString("\n")
-				_, _ = fOut.WriteString(strconv.FormatInt(oldValid, 10) + "," + strconv.FormatInt(oldInvalid, 10))
+				_, _ = fOut.WriteString(strconv.FormatInt(oldValid, 10))
+				_, _ = fOut.WriteString(",")
+				_, _ = fOut.WriteString(strconv.FormatInt(oldInvalid, 10))
 				_, _ = fOut.WriteString("\n")
 			}
 
