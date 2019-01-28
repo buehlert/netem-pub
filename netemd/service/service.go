@@ -207,16 +207,16 @@ func plusPoller(cfg *config.Config) {
 			// 	currentLine = 0
 			// }
 
-			fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err == nil {
+			// fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			// if err == nil {
 
-				defer fOut.Close()
+			// 	defer fOut.Close()
 
-				_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-				_, _ = fOut.WriteString("\n")
-				_, _ = fOut.WriteString(strconv.Itoa(countSame))
-				_, _ = fOut.WriteString("\n")
-			}
+			// 	_, _ = fOut.WriteString(strconv.Itoa(currentLine))
+			// 	_, _ = fOut.WriteString("\n")
+			// 	_, _ = fOut.WriteString(strconv.Itoa(countSame))
+			// 	_, _ = fOut.WriteString("\n")
+			// }
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}
