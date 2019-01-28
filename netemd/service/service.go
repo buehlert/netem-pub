@@ -3,8 +3,6 @@ package service
 import (
 	"expvar"
 	"fmt"
-	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -29,6 +27,8 @@ type ifaceExpVars struct {
 	PsnPse       *expvar.Float
 	Spin         *expvar.Float
 	NSpin        *expvar.Float
+	Valid        *expvar.Int
+	Invalid      *expvar.Int
 }
 
 type expVars struct {
@@ -69,6 +69,8 @@ func updatePlusExpVars(iface config.Interface, d *plus.PlusData) {
 	v.PsnPse.Set(d.PsnPse)
 	v.Spin.Set(d.Spin)
 	v.NSpin.Set(d.NSpin)
+	v.Valid.Set(d.Valid)
+	v.Invalid.Set(d.Invalid)
 }
 
 // func updatePlusExpVars()
@@ -87,6 +89,8 @@ func initExpVars(cfg *config.Config) {
 			PsnPse:       expvar.NewFloat(fmt.Sprintf("%s.delay.PsnPse", iface.Tag)),
 			Spin:         expvar.NewFloat(fmt.Sprintf("%s.delay.Spin", iface.Tag)),
 			NSpin:        expvar.NewFloat(fmt.Sprintf("%s.count.NSpin", iface.Tag)),
+			Valid:        expvar.NewInt(fmt.Sprintf("%s.delay.Valid", iface.Tag)),
+			Invalid:      expvar.NewInt(fmt.Sprintf("%s.count.Invalid", iface.Tag)),
 			// init plus variables
 		}
 
@@ -137,6 +141,7 @@ func hpingPoller(cfg *config.Config) {
 func plusPoller(cfg *config.Config) {
 	currentLine := 0
 	countSame := 0
+	var oldValid, oldInvalid, temp int64
 	for {
 		for _, iface := range cfg.Interfaces {
 
@@ -146,9 +151,25 @@ func plusPoller(cfg *config.Config) {
 			// 	continue
 			// }
 
-			plusData, newLine, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", 0)
+			plusData, newLine, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
 			if err != nil {
 				continue
+			}
+
+			if plusData.Valid > oldValid {
+				temp = plusData.Valid
+				plusData.Valid = plusData.Valid - oldValid
+				oldValid = temp
+			} else {
+				oldValid = plusData.Valid
+			}
+
+			if plusData.Invalid > oldInvalid {
+				temp = plusData.Invalid
+				plusData.Invalid = plusData.Invalid - oldInvalid
+				oldInvalid = temp
+			} else {
+				oldInvalid = plusData.Invalid
 			}
 
 			if currentLine == newLine {
@@ -169,16 +190,16 @@ func plusPoller(cfg *config.Config) {
 			// 	currentLine = 0
 			// }
 
-			fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err == nil {
+			// fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			// if err == nil {
 
-				defer fOut.Close()
+			// 	defer fOut.Close()
 
-				_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-				_, _ = fOut.WriteString("\n")
-				_, _ = fOut.WriteString(strconv.Itoa(countSame))
-				_, _ = fOut.WriteString("\n")
-			}
+			// 	_, _ = fOut.WriteString(strconv.Itoa(currentLine))
+			// 	_, _ = fOut.WriteString("\n")
+			// 	_, _ = fOut.WriteString(strconv.Itoa(countSame))
+			// 	_, _ = fOut.WriteString("\n")
+			// }
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}

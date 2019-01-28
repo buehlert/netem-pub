@@ -17,12 +17,45 @@ import (
 // }
 
 type PlusData struct {
-	PsnPse float64
-	Spin   float64
-	NSpin  float64
+	PsnPse  float64
+	Spin    float64
+	NSpin   float64
+	Valid   int64
+	Invalid int64
 }
 
-func Parse(filename string, nLine int) (*PlusData, int, error) {
+func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error) {
+	g, err2 := os.Open(filename2)
+	if err2 != nil {
+		return nil, nLine, err2
+	}
+	defer g.Close()
+
+	csvr := csv.NewReader(g)
+
+	var toReturn PlusData
+	var currentValid int64
+	var currentInvalid int64
+
+	for {
+		row, err := csvr.Read()
+		if err != nil {
+			break
+		}
+
+		currentValid, err = strconv.ParseInt(row[0], 10, 64)
+		if err != nil {
+			break
+		}
+		currentInvalid, err = strconv.ParseInt(row[1], 10, 64)
+		if err != nil {
+			break
+		}
+	}
+
+	toReturn.Valid = currentValid
+	toReturn.Invalid = currentInvalid
+
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, nLine, err
@@ -31,12 +64,11 @@ func Parse(filename string, nLine int) (*PlusData, int, error) {
 
 	n := 0
 	// newLines := 0
-	csvr := csv.NewReader(f)
+	csvr = csv.NewReader(f)
 
 	// var timestamp float64
 	var currentPsnPse, currentSpin float64
 	var newPsnPse, newSpin bool
-	var toReturn PlusData
 
 	for {
 		row, err := csvr.Read()
