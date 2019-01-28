@@ -6,7 +6,7 @@ import (
 )
 
 func Fetch(position int) error {
-	_, err := exec.Command("/bin/sh", "mod.sh", strconv.Itoa(position)).Output()
+	_, err := exec.Command("/bin/sh", "/root/share/vagrant_test/vagrant/mod.sh", strconv.Itoa(position)).Output()
 	if err != nil {
 		return err
 	}
