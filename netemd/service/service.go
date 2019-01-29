@@ -141,12 +141,12 @@ func hpingPoller(cfg *config.Config) {
 func plusPoller(cfg *config.Config) {
 	// currentLine := 0
 	// countSame := 0
-	oldValid := []int64{0, 0}
-	oldInvalid := []int64{0, 0}
-	temp := []int64{0, 0}
+	// oldValid := []int64{0, 0}
+	// oldInvalid := []int64{0, 0}
+	// temp := []int64{0, 0}
 
 	for {
-		for i, iface := range cfg.Interfaces {
+		for _, iface := range cfg.Interfaces {
 
 			// err := plus.Fetch("/root/share/vagrant_test/vagrant/spinbit_plus_printf.out", currentLine)
 			// err := plus.Fetch(currentLine)
@@ -174,21 +174,25 @@ func plusPoller(cfg *config.Config) {
 			// 	_, _ = fOut.WriteString("\n")
 			// }
 
-			if plusData.Valid >= oldValid[i] {
-				temp[i] = plusData.Valid
-				plusData.Valid = plusData.Valid - oldValid[i]
-				oldValid[i] = temp[i]
-			} else {
-				oldValid[i] = plusData.Valid
+			if plusData.Valid == 0 || plusData.PsnPse == 0 {
+				continue
 			}
 
-			if plusData.Invalid > oldInvalid[i] {
-				temp[i] = plusData.Invalid
-				plusData.Invalid = plusData.Invalid - oldInvalid[i]
-				oldInvalid[i] = temp[i]
-			} else {
-				oldInvalid[i] = plusData.Invalid
-			}
+			// if plusData.Valid >= oldValid[i] {
+			// 	temp[i] = plusData.Valid
+			// 	plusData.Valid = plusData.Valid - oldValid[i]
+			// 	oldValid[i] = temp[i]
+			// } else {
+			// 	oldValid[i] = plusData.Valid
+			// }
+
+			// if plusData.Invalid > oldInvalid[i] {
+			// 	temp[i] = plusData.Invalid
+			// 	plusData.Invalid = plusData.Invalid - oldInvalid[i]
+			// 	oldInvalid[i] = temp[i]
+			// } else {
+			// 	oldInvalid[i] = plusData.Invalid
+			// }
 
 			// if currentLine == newLine {
 			// 	countSame++
