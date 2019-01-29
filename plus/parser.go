@@ -89,7 +89,8 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 	csvr = csv.NewReader(f)
 
 	// var timestamp float64
-	var currentPsnPse, currentSpin float64
+	var currentSpin, currentPsnPseTemp float64
+	currentPsnPse := []float64{0.0, 0.0, 0.0, 0.0, 0.0}
 	var newPsnPse, newSpin bool
 
 	for {
@@ -114,7 +115,8 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 		}
 
 		// timestamp, _ = strconv.ParseFloat(row[0], 64)
-		currentPsnPse, err = strconv.ParseFloat(row[10], 64)
+
+		currentPsnPseTemp, err = strconv.ParseFloat(row[10], 64)
 		if err != nil {
 			n++
 			return &toReturn, n + nLine, err
@@ -138,11 +140,17 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 		// fmt.Println(newSpin, row)
 
 		if newPsnPse {
-			if currentPsnPse > 0.300 {
+			if currentPsnPseTemp > 0.300 {
 				n++
 				continue
 			}
-			toReturn.PsnPse = currentPsnPse
+			currentPsnPse[4] = currentPsnPse[3]
+			currentPsnPse[3] = currentPsnPse[2]
+			currentPsnPse[2] = currentPsnPse[1]
+			currentPsnPse[1] = currentPsnPse[0]
+			currentPsnPse[0] = currentPsnPseTemp
+
+			toReturn.PsnPse = (currentPsnPse[0] + currentPsnPse[1] + currentPsnPse[2] + currentPsnPse[3] + currentPsnPse[4]) / 5
 		}
 
 		if newSpin {
