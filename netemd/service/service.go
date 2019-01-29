@@ -29,6 +29,7 @@ type ifaceExpVars struct {
 	NSpin        *expvar.Float
 	Valid        *expvar.Int
 	Invalid      *expvar.Int
+	ValidTs      *expvar.Int
 }
 
 type expVars struct {
@@ -71,6 +72,7 @@ func updatePlusExpVars(iface config.Interface, d *plus.PlusData) {
 	v.NSpin.Set(d.NSpin)
 	v.Valid.Set(d.Valid)
 	v.Invalid.Set(d.Invalid)
+	v.ValidTs.Set(d.ValidTs)
 }
 
 // func updatePlusExpVars()
@@ -91,6 +93,7 @@ func initExpVars(cfg *config.Config) {
 			NSpin:        expvar.NewFloat(fmt.Sprintf("%s.count.NSpin", iface.Tag)),
 			Valid:        expvar.NewInt(fmt.Sprintf("%s.delay.Valid", iface.Tag)),
 			Invalid:      expvar.NewInt(fmt.Sprintf("%s.count.Invalid", iface.Tag)),
+			ValidTs:      expvar.NewInt(fmt.Sprintf("%s.count.ValidTs", iface.Tag)),
 			// init plus variables
 		}
 
@@ -141,9 +144,10 @@ func hpingPoller(cfg *config.Config) {
 func plusPoller(cfg *config.Config) {
 	// currentLine := 0
 	// countSame := 0
-	// oldValid := []int64{0, 0}
-	// oldInvalid := []int64{0, 0}
-	// temp := []int64{0, 0}
+	oldValid := []int64{0, 0}
+	oldInvalid := []int64{0, 0}
+	oldValidTs := []int64{0, 0}
+	temp := []int64{0, 0}
 
 	for {
 		for _, iface := range cfg.Interfaces {
@@ -154,7 +158,7 @@ func plusPoller(cfg *config.Config) {
 			// 	continue
 			// }
 
-			plusData, _, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
+			plusData, i, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
 			if err != nil {
 				continue
 			}
@@ -177,6 +181,18 @@ func plusPoller(cfg *config.Config) {
 			if plusData.Valid == 0 || plusData.PsnPse == 0 {
 				continue
 			}
+
+			temp[i] = plusData.Valid
+			plusData.Valid = plusData.Valid - oldValid[i]
+			oldValid[i] = temp[i]
+
+			temp[i] = plusData.Invalid
+			plusData.Invalid = plusData.Invalid - oldInvalid[i]
+			oldInvalid[i] = temp[i]
+
+			temp[i] = plusData.ValidTs
+			plusData.ValidTs = plusData.ValidTs - oldValidTs[i]
+			oldValidTs[i] = temp[i]
 
 			// if plusData.Valid >= oldValid[i] {
 			// 	temp[i] = plusData.Valid

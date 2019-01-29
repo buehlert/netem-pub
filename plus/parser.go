@@ -22,6 +22,7 @@ type PlusData struct {
 	NSpin   float64
 	Valid   int64
 	Invalid int64
+	ValidTs int64
 }
 
 func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error) {
@@ -36,6 +37,7 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 	var toReturn PlusData
 	var currentValid int64
 	var currentInvalid int64
+	var currentValidTs int64
 
 	for {
 		row, err := csvr.Read()
@@ -43,11 +45,19 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 			break
 		}
 
+		if len(row) != 3 {
+			continue
+		}
+
 		currentValid, err = strconv.ParseInt(row[0], 10, 64)
 		if err != nil {
 			break
 		}
 		currentInvalid, err = strconv.ParseInt(row[1], 10, 64)
+		if err != nil {
+			break
+		}
+		currentValidTs, err = strconv.ParseInt(row[2], 10, 64)
 		if err != nil {
 			break
 		}
@@ -66,6 +76,7 @@ func Parse(filename string, filename2 string, nLine int) (*PlusData, int, error)
 
 	toReturn.Valid = currentValid
 	toReturn.Invalid = currentInvalid
+	toReturn.ValidTs = currentValidTs
 
 	f, err := os.Open(filename)
 	if err != nil {
