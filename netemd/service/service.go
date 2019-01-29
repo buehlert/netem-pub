@@ -150,7 +150,7 @@ func plusPoller(cfg *config.Config) {
 	temp := []int64{0, 0}
 
 	for {
-		for _, iface := range cfg.Interfaces {
+		for i, iface := range cfg.Interfaces {
 
 			// err := plus.Fetch("/root/share/vagrant_test/vagrant/spinbit_plus_printf.out", currentLine)
 			// err := plus.Fetch(currentLine)
@@ -158,7 +158,7 @@ func plusPoller(cfg *config.Config) {
 			// 	continue
 			// }
 
-			plusData, i, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
+			plusData, _, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
 			if err != nil {
 				continue
 			}
