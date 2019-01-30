@@ -13,11 +13,6 @@ import (
 )
 
 type ifaceExpVars struct {
-	// add all new variables from the plus package
-	// problem, in one iteration we can get multiple values from the observer output...
-	// we just have to add a timestamp variable, that should be analyzed by the dashboard
-	// then just update multiple times in a row?
-
 	PktCount     *expvar.Int
 	PktDropped   *expvar.Int
 	PktReordered *expvar.Int
@@ -26,7 +21,6 @@ type ifaceExpVars struct {
 	ReverseDelay *expvar.Int
 	PsnPse       *expvar.Float
 	Spin         *expvar.Float
-	NSpin        *expvar.Float
 	Valid        *expvar.Int
 	Invalid      *expvar.Int
 	ValidTs      *expvar.Int
@@ -69,13 +63,10 @@ func updatePlusExpVars(iface config.Interface, d *plus.PlusData) {
 
 	v.PsnPse.Set(d.PsnPse)
 	v.Spin.Set(d.Spin)
-	v.NSpin.Set(d.NSpin)
 	v.Valid.Set(d.Valid)
 	v.Invalid.Set(d.Invalid)
 	v.ValidTs.Set(d.ValidTs)
 }
-
-// func updatePlusExpVars()
 
 func initExpVars(cfg *config.Config) {
 	ev.Map = make(map[string]ifaceExpVars)
@@ -90,11 +81,9 @@ func initExpVars(cfg *config.Config) {
 			ReverseDelay: expvar.NewInt(fmt.Sprintf("%s.delay.reverse", iface.Tag)),
 			PsnPse:       expvar.NewFloat(fmt.Sprintf("%s.delay.PsnPse", iface.Tag)),
 			Spin:         expvar.NewFloat(fmt.Sprintf("%s.delay.Spin", iface.Tag)),
-			NSpin:        expvar.NewFloat(fmt.Sprintf("%s.count.NSpin", iface.Tag)),
 			Valid:        expvar.NewInt(fmt.Sprintf("%s.delay.Valid", iface.Tag)),
 			Invalid:      expvar.NewInt(fmt.Sprintf("%s.count.Invalid", iface.Tag)),
 			ValidTs:      expvar.NewInt(fmt.Sprintf("%s.count.ValidTs", iface.Tag)),
-			// init plus variables
 		}
 
 		ev.Map[iface.Name] = v
@@ -142,8 +131,6 @@ func hpingPoller(cfg *config.Config) {
 }
 
 func plusPoller(cfg *config.Config) {
-	// currentLine := 0
-	// countSame := 0
 	oldValid := []int64{0, 0}
 	oldInvalid := []int64{0, 0}
 	oldValidTs := []int64{0, 0}
@@ -152,31 +139,10 @@ func plusPoller(cfg *config.Config) {
 	for {
 		for i, iface := range cfg.Interfaces {
 
-			// err := plus.Fetch("/root/share/vagrant_test/vagrant/spinbit_plus_printf.out", currentLine)
-			// err := plus.Fetch(currentLine)
-			// if err != nil {
-			// 	continue
-			// }
-
-			plusData, _, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out", 0)
+			plusData, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out")
 			if err != nil {
 				continue
 			}
-
-			// fOut, err := os.OpenFile("/root/share/test_output_valid.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			// if err == nil {
-
-			// 	defer fOut.Close()
-
-			// 	_, _ = fOut.WriteString(strconv.FormatInt(plusData.Valid, 10))
-			// 	_, _ = fOut.WriteString(",")
-			// 	_, _ = fOut.WriteString(strconv.FormatInt(plusData.Invalid, 10))
-			// 	_, _ = fOut.WriteString("\n")
-			// 	_, _ = fOut.WriteString(strconv.FormatInt(oldValid, 10))
-			// 	_, _ = fOut.WriteString(",")
-			// 	_, _ = fOut.WriteString(strconv.FormatInt(oldInvalid, 10))
-			// 	_, _ = fOut.WriteString("\n")
-			// }
 
 			if plusData.Valid == 0 || plusData.PsnPse == 0 {
 				continue
@@ -194,56 +160,11 @@ func plusPoller(cfg *config.Config) {
 			plusData.ValidTs = plusData.ValidTs - oldValidTs[i]
 			oldValidTs[i] = temp[i]
 
-			// if plusData.Valid >= oldValid[i] {
-			// 	temp[i] = plusData.Valid
-			// 	plusData.Valid = plusData.Valid - oldValid[i]
-			// 	oldValid[i] = temp[i]
-			// } else {
-			// 	oldValid[i] = plusData.Valid
-			// }
-
-			// if plusData.Invalid > oldInvalid[i] {
-			// 	temp[i] = plusData.Invalid
-			// 	plusData.Invalid = plusData.Invalid - oldInvalid[i]
-			// 	oldInvalid[i] = temp[i]
-			// } else {
-			// 	oldInvalid[i] = plusData.Invalid
-			// }
-
-			// if currentLine == newLine {
-			// 	countSame++
-			// } else {
-			// 	currentLine = newLine
-			// 	countSame = 0
-			// }
-
-			// if countSame == 5 {
-			// 	currentLine = 0
-			// 	countSame = 0
-			// }
-
 			updatePlusExpVars(iface, plusData)
-
-			// if currentLine > 50 {
-			// 	currentLine = 0
-			// }
-
-			// fOut, err := os.OpenFile("/root/share/test_output_count.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			// if err == nil {
-
-			// 	defer fOut.Close()
-
-			// 	_, _ = fOut.WriteString(strconv.Itoa(currentLine))
-			// 	_, _ = fOut.WriteString("\n")
-			// 	_, _ = fOut.WriteString(strconv.Itoa(countSame))
-			// 	_, _ = fOut.WriteString("\n")
-			// }
 		}
 		time.Sleep(cfg.PollIntervalMs * time.Millisecond)
 	}
 }
-
-// plusPoller
 
 func NetemPub(cfg *config.Config, noPing bool) {
 	initExpVars(cfg)
@@ -252,5 +173,4 @@ func NetemPub(cfg *config.Config, noPing bool) {
 	if !noPing {
 		go hpingPoller(cfg)
 	}
-	// start plusPoller
 }
