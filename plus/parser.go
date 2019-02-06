@@ -101,7 +101,7 @@ func Parse(filename string, filename2 string) (*PlusData, error) {
 		}
 
 		if newPsnPse {
-			if currentPsnPseTemp > 0.300 {
+			if currentPsnPseTemp > 5.0 {
 				fOut, err := os.OpenFile("/root/share/debug.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 				if err == nil {
 
@@ -144,7 +144,7 @@ func Parse(filename string, filename2 string) (*PlusData, error) {
 		}
 
 		if newSpin {
-			if currentSpin > 0.250 {
+			if currentSpin > 5.0 {
 				fOut, err := os.OpenFile("/root/share/debug.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 				if err == nil {
 
