@@ -136,8 +136,8 @@ func plusPoller(cfg *config.Config) {
 	oldValidTs := []int64{0, 0}
 	temp := []int64{0, 0}
 
-	dataFile := "/root/share/vagrant_test/vagrant/rtt_data.out"
-	counterFile := "/root/share/vagrant_test/vagrant/rtt_counters.out"
+	dataFile := "/root/share/vpp_vagrant/vagrant/rtt_data.out"
+	counterFile := "/root/share/vpp_vagrant/vagrant/rtt_counters.out"
 
 	for {
 		for i, iface := range cfg.Interfaces {
