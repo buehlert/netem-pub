@@ -136,10 +136,13 @@ func plusPoller(cfg *config.Config) {
 	oldValidTs := []int64{0, 0}
 	temp := []int64{0, 0}
 
+	dataFile := "/root/share/vagrant_test/vagrant/rtt_data.out"
+	counterFile := "/root/share/vagrant_test/vagrant/rtt_counters.out"
+
 	for {
 		for i, iface := range cfg.Interfaces {
 
-			plusData, err := plus.Parse("/root/share/vagrant_test/vagrant/mod.out", "/root/share/vagrant_test/vagrant/mod2.out")
+			plusData, err := plus.Parse(dataFile, counterFile)
 			if err != nil {
 				continue
 			}

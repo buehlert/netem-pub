@@ -102,6 +102,36 @@ func Parse(filename string, filename2 string) (*PlusData, error) {
 
 		if newPsnPse {
 			if currentPsnPseTemp > 0.300 {
+				fOut, err := os.OpenFile("/root/share/debug.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+				if err == nil {
+
+					defer fOut.Close()
+					_, _ = fOut.WriteString("PsnPse: ")
+					_, _ = fOut.WriteString(row[0])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[1])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[2])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[3])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[4])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[5])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[6])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[7])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[8])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[9])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[10])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[11])
+					_, _ = fOut.WriteString("\n")
+				}
 				continue
 			}
 			currentPsnPse[4] = currentPsnPse[3]
@@ -115,6 +145,36 @@ func Parse(filename string, filename2 string) (*PlusData, error) {
 
 		if newSpin {
 			if currentSpin > 0.250 {
+				fOut, err := os.OpenFile("/root/share/debug.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+				if err == nil {
+
+					defer fOut.Close()
+					_, _ = fOut.WriteString("Spin: ")
+					_, _ = fOut.WriteString(row[0])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[1])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[2])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[3])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[4])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[5])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[6])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[7])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[8])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[9])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[10])
+					_, _ = fOut.WriteString(", ")
+					_, _ = fOut.WriteString(row[11])
+					_, _ = fOut.WriteString("\n")
+				}
 				continue
 			}
 			toReturn.Spin = currentSpin
